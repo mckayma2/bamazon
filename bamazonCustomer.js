@@ -4,9 +4,11 @@ var inquirer = require('inquirer');
 var con = mysql.createConnection({
 host: "localhost",
 user: "root",
-password: "Tango123"
+password: "Player1#",
 database: "bamazon"
+
 });
+
 
 function sqlConnect(q, type){
 con.connect(function(err) {
@@ -15,19 +17,22 @@ con.connect(function(err) {
   con.query(q, function (err, result) {
   if (err) throw err;
   console.log(type);
+  console.log(result);
   });
-	con.end();
+	
   });
-}
+
+};
+
+
 
 function options(){
   var options = [
-
   {
       type: 'list',
       name: 'userOption',
       message: 'menu options:',
-      choices: ['View Products for Sale', 'View Low Inventory', 'Add to Inventory', 'Add New Product'],
+      choices: ['View Products for Sale', 'Purchase', 'View Low Inventory', 'Add to Inventory', 'Add New Product'],
     
     }
 
@@ -38,6 +43,10 @@ inquirer.prompt(options).then(answers => {
 		if(answers.userOption ==='View Products for Sale'){
 			
 			 productSale();
+		}
+		else if(answers.userOption ==='Purchase'){
+
+			 purchase();
 		}
 		else if(answers.userOption ==='View Low Inventory'){
 
@@ -56,13 +65,66 @@ inquirer.prompt(options).then(answers => {
 };
 
 function productSale(){
-	var querytext;
+	var querytext= 'SELECT * FROM product';
 	var querytype = 'Product data retrieved';
 	sqlConnect(querytext, querytype);
+
 };
+
+function purchase(){
+var purchase = [
+		  {
+		   type: 'input',
+		   name: 'productId',
+		   message: "Please enter product id number"
+		   },
+
+		  {
+		    type: 'input',
+		    name: 'qty',
+		    message: "Please enter qty required"
+		  }
+		];
+
+		inquirer.prompt(purchase).then(answers => {
+		  console.log(JSON.stringify(answers, null, '  '));
+		
+		
+		var pid = answers.productId;
+		var pi = answers.qty;
+		var querytext='UPDATE product SET productInventory = productInventory -';
+		querytext += pi;
+		querytext += ' WHERE productId =';
+		querytext += pid;
+		querytext += '; ';
+		var querytype ='Purchase completed';
+		//console.log(querytext);
+		sqlConnect(querytext, querytype);
+		purchaseSummary(pi, pid);
+		});
+
+};
+
+function purchaseSummary(qty, id){
+		
+
+		var querytext ='SELECT productCost * ';
+		querytext += qty;
+		querytext +=' FROM product WHERE productId =';
+		querytext += id;
+		querytext += '; ';
+		var querytype ='Purchase Summary';
+		con.query(querytext, function (err, result) {
+  		if (err) throw err;
+ 			 console.log(querytype);
+  		console.log(JSON.stringify(result, null, '  '));
+  		});
+	
+		};
+
 function lowInv(){
-	var querytext;
-	var querytype = 'Low inventory data retrieved';
+	var querytext= 'SELECT * FROM product WHERE productInventory <= 10';
+	var querytype = 'Low inventory data retrieved (less than or equal to 10)';
 	sqlConnect(querytext, querytype);
 };
 
@@ -77,7 +139,7 @@ var addInv = [
 		  {
 		    type: 'input',
 		    name: 'qty',
-		    message: "Please enter quantity to add"
+		    message: "Please enter new total"
 		  }
 		];
 
@@ -89,10 +151,11 @@ var addInv = [
 		var pi = answers.qty;
 		var querytext='UPDATE product SET productInventory =';
 		querytext += pi;
-		querytext += 'WHERE productId =';
+		querytext += ' WHERE productId =';
 		querytext += pid;
 		var querytype ='Item inventory updated';
 		sqlConnect(querytext, querytype);
+		//console.log (querytext);
 		});
 	
 };
@@ -106,33 +169,38 @@ var addProd = [
 		   }, 
 		   {
 		   type: 'input',
-		   name: 'productCost',
-		   message: "Enter unit price"
+		   name: 'productInventory',
+		   message: "Enter Quantity in inventory"
 		   }, 
 		    {
 		   type: 'input',
-		   name: 'productInventory',
-		   message: "Enter Quantity in inventory"
+		   name: 'productCost',
+		   message: "Enter unit price"
 		   } 
 		];
 
 		inquirer.prompt(addProd).then(answers => {
 		  console.log(JSON.stringify(answers, null, '  '));
-		var pn = answers.productName;
+		var pn= '"';
+		pn += answers.productName;
+		pn += '"';
+
 		var pc = answers.productCost;
 		var pi = answers.productInventory;
 
-		var querytext='INSERT INTO product (productName, productCost, productInventory) VALUES('
+		var querytext='INSERT INTO product (productName, productInventory, productCost) VALUES('
 		querytext += pn;
 		querytext += ",";
-		querytext += pc;
-		querytext += ",";
 		querytext += pi;
+		querytext += ",";
+		querytext += pc;
 		querytext += ")";
 
 		var querytype ='Product added';
+		//console.log(querytext);
 		sqlConnect(querytext, querytype);
 		});
+
 };
 
 options();
