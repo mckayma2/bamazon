@@ -1,23 +1,23 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 
-// var con = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "Tango123"
-//   database: "bamazon"
-// });
+var con = mysql.createConnection({
+host: "localhost",
+user: "root",
+password: "Tango123"
+database: "bamazon"
+});
 
 function sqlConnect(q, type){
-	// con.connect(function(err) {
-	//   if (err) throw err;
-	//   console.log("Connected!");
-	//con.query(q, function (err, result) {
-   // if (err) throw err;
-   // console.log(type);
- // });
-	//	con.end();
-	// });
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+  con.query(q, function (err, result) {
+  if (err) throw err;
+  console.log(type);
+  });
+	con.end();
+  });
 }
 
 function options(){
@@ -46,7 +46,7 @@ inquirer.prompt(options).then(answers => {
 		else if(answers.userOption ==='Add to Inventory'){
 			 
 			 addInv();
-					}
+		}
 		else if(answers.userOption ==='Add New Product'){
 
 			addProd();
@@ -65,6 +65,7 @@ function lowInv(){
 	var querytype = 'Low inventory data retrieved';
 	sqlConnect(querytext, querytype);
 };
+
 function addInv(){
 var addInv = [
 		  {
@@ -80,9 +81,16 @@ var addInv = [
 		  }
 		];
 
-		inquirer.prompt(addProd).then(answers => {
+		inquirer.prompt(addInv).then(answers => {
 		  console.log(JSON.stringify(answers, null, '  '));
-		var querytext;
+		
+		
+		var pid = answers.productId;
+		var pi = answers.qty;
+		var querytext='UPDATE product SET productInventory =';
+		querytext += pi;
+		querytext += 'WHERE productId =';
+		querytext += pid;
 		var querytype ='Item inventory updated';
 		sqlConnect(querytext, querytype);
 		});
