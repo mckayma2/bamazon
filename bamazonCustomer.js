@@ -19,7 +19,7 @@ con.connect(function(err) {
   console.log(type);
   console.log(result);
   });
-	
+	con.end();
   });
 
 };
