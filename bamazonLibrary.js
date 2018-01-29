@@ -120,15 +120,15 @@ var bamazonLibrary ={
 
 			},
 			productSaleByDept: function (){
-				var querytext= 'SELECT * FROM product';
+				var querytext= 'select departments.department_name, sum(product_sales), sum(costTotal)as Over_head_Cost, sum(product_sales - costTotal) as Profit from product inner join departments on product.depId = departments.department_id group by department_name;';
 				var querytype = 'Product data retrieved';
 				this.sqlConnect(querytext, querytype);
 
 			},
 			newDept: function (){
-				var querytext= 'SELECT * FROM product';
-				var querytype = 'Product data retrieved';
-				this.sqlConnect(querytext, querytype);
+				// var querytext= 'SELECT * FROM product';
+				// var querytype = 'Product data retrieved';
+				// this.sqlConnect(querytext, querytype);
 
 			},
 
@@ -170,6 +170,7 @@ var bamazonLibrary ={
 					this.sqlConnect(querytext, querytype);
 					this.purchaseSummary(pi, pid);
 					this.update_product_sales(pi, pid);
+					this.update_product_cost(pi, pid);
 					});
 
 			},
@@ -200,6 +201,23 @@ var bamazonLibrary ={
 					querytext += id;
 					querytext += '; ';
 					var querytype ='Purchase Summary';
+					 sq.con.query(querytext, function (err, result) {
+			  		if (err) throw err;
+			  		 console.log(querytype);
+			  		console.log(JSON.stringify(result, null, '  '));
+			  		});
+				console.log(querytext);
+					},
+
+			update_product_cost:function (qty, id){
+					
+
+					var querytext ='UPDATE product SET costTotal = (cost * ';
+					querytext += qty;
+					querytext +=') + costTotal WHERE productId =';
+					querytext += id;
+					querytext += '; ';
+					var querytype ='Product Cost Summary';
 					 sq.con.query(querytext, function (err, result) {
 			  		if (err) throw err;
 			  		 console.log(querytype);
@@ -262,7 +280,18 @@ var bamazonLibrary ={
 					   type: 'input',
 					   name: 'productCost',
 					   message: "Enter unit price"
+					   },
+					   {
+					   type: 'input',
+					   name: 'depId',
+					   message: "Please Enter Department Id"
+					   },
+					    {
+					   type: 'input',
+					   name: 'cost',
+					   message: "Please Enter Cost Price"
 					   } 
+
 					];
 
 					inquirer.prompt(addProd).then(answers => {
@@ -273,13 +302,19 @@ var bamazonLibrary ={
 
 					var pc = answers.productCost;
 					var pi = answers.productInventory;
+					var pd = answers.depId;
+					var cost = answers.cost;
 
-					var querytext='INSERT INTO product (productName, productInventory, productCost) VALUES('
+					var querytext='INSERT INTO product (productName, productInventory, productCost, depId, cost) VALUES('
 					querytext += pn;
 					querytext += ",";
 					querytext += pi;
 					querytext += ",";
 					querytext += pc;
+					querytext += ",";
+					querytext += pd;
+					querytext += ",";
+					querytext += cost;
 					querytext += ")";
 
 					var querytype ='Product added';
