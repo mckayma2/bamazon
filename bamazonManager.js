@@ -3,5 +3,4 @@ var inquirer = require('inquirer');
 var mylibrary = require('./bamazonLibrary.js');
 
 
-mylibrary.bLib.customerOptions();
-	
+mylibrary.bLib.options();
