@@ -152,12 +152,12 @@ var bamazonLibrary ={
 				
 					},
 
-					update_product_sales:function (qty, id){
+			update_product_sales:function (qty, id){
 					
 
 					var querytext ='UPDATE product SET product_sales = (productCost * ';
 					querytext += qty;
-					querytext +=') WHERE productId =';
+					querytext +=') + product_sales WHERE productId =';
 					querytext += id;
 					querytext += '; ';
 					var querytype ='Purchase Summary';
