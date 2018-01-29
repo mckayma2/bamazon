@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 
-var sq ={
+var sq = {
 	con: mysql.createConnection({
 		host: "localhost",
 		user: "root",
@@ -161,7 +161,7 @@ var bamazonLibrary ={
 					querytext += id;
 					querytext += '; ';
 					var querytype ='Purchase Summary';
-					 this.con.query(querytext, function (err, result) {
+					 sq.con.query(querytext, function (err, result) {
 			  		if (err) throw err;
 			  		 console.log(querytype);
 			  		console.log(JSON.stringify(result, null, '  '));
