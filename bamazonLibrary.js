@@ -93,6 +93,45 @@ var bamazonLibrary ={
 
 			},
 
+			supervisorOptions:function (){
+			  var options = [
+			  {
+			      type: 'list',
+			      name: 'userOption',
+			      message: 'menu options:',
+			      choices: ['View Product Sales by Department', 'Create New Department'],
+			    
+			    }
+
+			];
+
+			inquirer.prompt(options).then(answers => {
+			  console.log(JSON.stringify(answers, null, '  '));
+					if(answers.userOption ==='View Product Sales by Department'){
+						
+						this.productSaleByDept();
+					}
+					else if(answers.userOption ==='Create New Department'){
+
+						 this.newDept();
+					}
+					
+			});
+
+			},
+			productSaleByDept: function (){
+				var querytext= 'SELECT * FROM product';
+				var querytype = 'Product data retrieved';
+				this.sqlConnect(querytext, querytype);
+
+			},
+			newDept: function (){
+				var querytext= 'SELECT * FROM product';
+				var querytype = 'Product data retrieved';
+				this.sqlConnect(querytext, querytype);
+
+			},
+
 			productSale: function (){
 				var querytext= 'SELECT * FROM product';
 				var querytype = 'Product data retrieved';
